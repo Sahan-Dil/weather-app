@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // If using React Router, use `useNavigate`
 import ForecastItem from './ForecastItem';
 
 import cityData from '../public/services/city.json';
@@ -23,7 +22,7 @@ export default function WeatherOverview() {
   }, []);
 
   return (
-    <div className="flex flex-wrap gap-4 p-4 justify-center">
+    <div className="px-6 sm:px-12 md:px-20 lg:px-36 xl:px-60 2xl:px-80 py-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
       {forecast.map((item) => (
         <div key={item.CityCode}>
           <ForecastItem {...item} />

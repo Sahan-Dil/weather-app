@@ -25,20 +25,16 @@ interface ForecastProps {
 
 const statusToStyle: Record<string, string> = {
   Clouds: 'bg-gradient-to-br from-blue-400 to-blue-600',
-  'Few Clouds': 'bg-gradient-to-br from-blue-400 to-blue-600',
   Clear: 'bg-gradient-to-br from-green-400 to-green-600',
   Rain: 'bg-gradient-to-br from-orange-400 to-orange-600',
   Mist: 'bg-gradient-to-br from-red-400 to-red-600',
-  'Broken Clouds': 'bg-gradient-to-br from-purple-400 to-purple-600',
 };
 
 const statusToImage: Record<string, any> = {
   Clouds: clouds,
-  'Few Clouds': clouds,
-  Clear: '/assets/clear.png',
-  Rain: '/assets/rain.png',
-  Mist: '/assets/mist.png',
-  'Broken Clouds': '/assets/clouds.png',
+  Clear: clouds,
+  Rain: clouds,
+  Mist: clouds,
 };
 
 export default function ForecastItem({
@@ -46,8 +42,8 @@ export default function ForecastItem({
   CityCode,
   Temp,
   Status,
-  TempMin = '',
-  TempMax = '',
+  TempMin = 'qqq',
+  TempMax = 'eee',
   Pressure = '1018hPa',
   Humidity = '70%',
   Visibility = '8.0km',
@@ -85,75 +81,84 @@ export default function ForecastItem({
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer shadow-lg overflow-hidden rounded-xl w-64 relative"
+      className="cursor-pointer overflow-hidden rounded-lg w-full flex flex-col h-[240px] sm:h-[280px] md:h-[320px] transition-all duration-300 ease-in-out hover:scale-95 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] opacity-90 hover:opacity-100"
     >
-      {/* Top weather section with colored background */}
-      <div className={`relative p-4 text-white ${gradient} h-36`}>
-        {/* Clouds background overlay - only in top section */}
+      {/* Top Section */}
+      <div className={`relative text-white ${gradient} h-2/3 px-16 pt-8 pb-6`}>
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={cloudBg}
             alt="Clouds Background"
             layout="fill"
             objectFit="cover"
-            className="opacity-20"
+            className="opacity-70 mt-16"
           />
         </div>
 
-        {/* Close button (X) - top right */}
-        <div className="absolute top-2 right-2 z-10">
-          <button className="text-white text-lg font-bold">&times;</button>
-        </div>
-
-        {/* City & Time Info */}
-        <div className="relative z-10">
-          <div className="text-lg font-semibold">
-            {CityName}, {CityCode}
-          </div>
-          <div className="text-xs opacity-90">
-            {formattedTime}, {formattedDate}
-          </div>
-
-          <div className="flex items-start mt-2">
-            <div className="flex-1">
-              <div className="flex items-start">
-                <span className="text-5xl font-bold">{roundedTemp}</span>
-                <span className="text-xl mt-1">°C</span>
+        <div className="relative z-10 flex flex-col justify-between h-full">
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="text-xl font-bold">
+                {CityName}, {CityCode}
               </div>
-              <div className="text-sm mt-1">{Status}</div>
+              <div className="text-sm opacity-90 mt-1">
+                {formattedTime}, {formattedDate}
+              </div>
             </div>
 
-            {/* Weather Icon */}
-            <div className="mr-2">
-              <Image src={weatherIcon} alt={Status} width={36} height={36} />
+            <div className="text-right">
+              <div className="flex items-start">
+                <span className="text-6xl font-bold leading-none">
+                  {roundedTemp}
+                </span>
+                <span className="text-2xl ml-1 mt-1">°C</span>
+              </div>
             </div>
           </div>
 
-          {TempMin && TempMax && (
-            <div className="text-xs mt-1">
-              Temp Min: {TempMin} • Temp Max: {TempMax}
+          <div className="flex justify-between items-end">
+            <div className="flex items-center space-x-2">
+              <Image src={weatherIcon} alt={Status} width={24} height={24} />
+              <div className="text-base">{Status}</div>
             </div>
-          )}
+            <div className="text-right text-sm leading-tight">
+              <div>Temp Min: {TempMin}°C</div>
+              <div>Temp Max: {TempMax}°C</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Bottom section with black background */}
-      <div className="bg-gray-900 text-white p-2">
-        <div className="flex justify-between items-center text-xs">
-          {/* Left column */}
+      {/* Bottom Section */}
+      <div className="bg-[#383B47] text-white text-xs p-4 flex justify-between items-start h-1/3 relative">
+        {/* Left Column */}
+        <div className="space-y-1">
           <div>
-            <div>Pressure: {Pressure}</div>
-            <div>Humidity: {Humidity}</div>
-            <div>Visibility: {Visibility}</div>
+            <span className="font-semibold">Pressure:</span> {Pressure}
           </div>
+          <div>
+            <span className="font-semibold">Humidity:</span> {Humidity}
+          </div>
+          <div>
+            <span className="font-semibold">Visibility:</span> {Visibility}
+          </div>
+        </div>
 
-          {/* Wind direction icon and measurement */}
-          <div className="flex flex-col items-end">
-            <div>
-              {WindSpeed} {WindDirection}
-            </div>
-            <div>Sunrise: {Sunrise}</div>
-            <div>Sunset: {Sunset}</div>
+        {/* Center Column (Wind) */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="text-sm">🧭</div>
+          <div className="text-center">
+            {WindSpeed} {WindDirection}
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-1 text-right">
+          <div>
+            <span className="font-semibold">Sunrise:</span> {Sunrise}
+          </div>
+          <div>
+            <span className="font-semibold">Sunset:</span> {Sunset}
           </div>
         </div>
       </div>
