@@ -81,57 +81,80 @@ export default function ForecastItem({
   };
 
   const roundedTemp = Math.round(parseFloat(Temp));
-  const showMinMaxTemp = TempMin && TempMax;
 
   return (
     <div
       onClick={handleClick}
-      className={`relative w-72 h-48 p-4 rounded-xl text-white shadow-lg cursor-pointer overflow-hidden ${gradient}`}
+      className="cursor-pointer shadow-lg overflow-hidden rounded-xl w-64 relative"
     >
-      {/* Clouds background overlay */}
-      <Image
-        src={cloudBg}
-        alt="Clouds Background"
-        layout="fill"
-        objectFit="cover"
-        className="absolute inset-0 opacity-20"
-      />
-
-      {/* Weather Icon */}
-      <div className="absolute top-4 right-4 w-12 h-12">
-        <Image src={weatherIcon} alt={Status} width={48} height={48} />
-      </div>
-
-      {/* City & Temp Info */}
-      <div className="relative z-10">
-        <div className="text-sm opacity-90">
-          {formattedTime}, {formattedDate}
+      {/* Top weather section with colored background */}
+      <div className={`relative p-4 text-white ${gradient} h-36`}>
+        {/* Clouds background overlay - only in top section */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src={cloudBg}
+            alt="Clouds Background"
+            layout="fill"
+            objectFit="cover"
+            className="opacity-20"
+          />
         </div>
 
-        <div className="text-xl font-semibold mt-1">{CityName}</div>
-        <div className="text-4xl font-bold mt-1">{roundedTemp}°C</div>
-        <div className="text-sm mt-1">{Status}</div>
+        {/* Close button (X) - top right */}
+        <div className="absolute top-2 right-2 z-10">
+          <button className="text-white text-lg font-bold">&times;</button>
+        </div>
 
-        {showMinMaxTemp && (
-          <div className="text-xs mt-1">
-            Temp Min: {TempMin} • Temp Max: {TempMax}
+        {/* City & Time Info */}
+        <div className="relative z-10">
+          <div className="text-lg font-semibold">
+            {CityName}, {CityCode}
           </div>
-        )}
+          <div className="text-xs opacity-90">
+            {formattedTime}, {formattedDate}
+          </div>
+
+          <div className="flex items-start mt-2">
+            <div className="flex-1">
+              <div className="flex items-start">
+                <span className="text-5xl font-bold">{roundedTemp}</span>
+                <span className="text-xl mt-1">°C</span>
+              </div>
+              <div className="text-sm mt-1">{Status}</div>
+            </div>
+
+            {/* Weather Icon */}
+            <div className="mr-2">
+              <Image src={weatherIcon} alt={Status} width={36} height={36} />
+            </div>
+          </div>
+
+          {TempMin && TempMax && (
+            <div className="text-xs mt-1">
+              Temp Min: {TempMin} • Temp Max: {TempMax}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="absolute bottom-2 left-4 right-4 text-xs flex justify-between text-gray-100 opacity-90">
-        <div>
-          <div>Pressure: {Pressure}</div>
-          <div>Humidity: {Humidity}</div>
-          <div>Visibility: {Visibility}</div>
-        </div>
-        <div className="text-right">
+      {/* Bottom section with black background */}
+      <div className="bg-gray-900 text-white p-2">
+        <div className="flex justify-between items-center text-xs">
+          {/* Left column */}
           <div>
-            Wind: {WindSpeed} {WindDirection}
+            <div>Pressure: {Pressure}</div>
+            <div>Humidity: {Humidity}</div>
+            <div>Visibility: {Visibility}</div>
           </div>
-          <div>Sunrise: {Sunrise}</div>
-          <div>Sunset: {Sunset}</div>
+
+          {/* Wind direction icon and measurement */}
+          <div className="flex flex-col items-end">
+            <div>
+              {WindSpeed} {WindDirection}
+            </div>
+            <div>Sunrise: {Sunrise}</div>
+            <div>Sunset: {Sunset}</div>
+          </div>
         </div>
       </div>
     </div>
