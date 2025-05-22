@@ -21,6 +21,8 @@ interface ForecastProps {
   Sunset?: string;
   ForecastDate?: string;
   Time?: string;
+  onBack?: () => void;
+  fullView?: boolean;
 }
 
 const statusToStyle: Record<string, string> = {
@@ -53,8 +55,9 @@ export default function ForecastItem({
   Sunset = '6:05am',
   ForecastDate,
   Time,
+  onBack,
+  fullView,
 }: ForecastProps) {
-  const router = useRouter();
   const gradient =
     statusToStyle[Status] || 'bg-gradient-to-br from-gray-400 to-gray-600';
   const weatherIcon = statusToImage[Status] || '/assets/default.png';
@@ -72,16 +75,15 @@ export default function ForecastItem({
     ForecastDate ||
     `${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getDate()}`;
 
-  const handleClick = () => {
-    router.push(`/weather/${CityCode}`);
-  };
-
   const roundedTemp = Math.round(parseFloat(Temp));
 
   return (
     <div
-      onClick={handleClick}
-      className="cursor-pointer overflow-hidden rounded-lg w-full flex flex-col h-[240px] sm:h-[280px] md:h-[320px] transition-all duration-300 ease-in-out hover:scale-95 hover:-translate-y-2 hover:rotate-1 hover:shadow-[0_20px_40px_rgba(255,255,255,0.2)] opacity-90 hover:opacity-100"
+      className={
+        fullView
+          ? 'overflow-hidden rounded-lg w-full flex flex-col h-[240px] sm:h-[280px] md:h-[320px]'
+          : 'cursor-pointer overflow-hidden rounded-lg w-full flex flex-col h-[240px] sm:h-[280px] md:h-[320px] transition-transform transition-shadow transition-opacity duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] hover:scale-[0.98] hover:-translate-y-1 hover:shadow-2xl hover:opacity-100 opacity-90'
+      }
     >
       {/* Top Section */}
       <div className={`relative text-white ${gradient} h-2/3 px-16 pt-8 pb-6`}>
@@ -94,6 +96,14 @@ export default function ForecastItem({
             className="opacity-70 mt-16"
           />
         </div>
+        {fullView && (
+          <button
+            onClick={onBack}
+            className="cursor-pointer absolute top-1 left-1 text-white px-3 py-1 rounded-md text-sm font-medium transition"
+          >
+            <strong>←</strong>
+          </button>
+        )}
 
         <div className="relative z-10 flex flex-col justify-between h-full">
           <div className="flex justify-between items-start">
