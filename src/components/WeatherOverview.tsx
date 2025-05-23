@@ -1,33 +1,28 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import ForecastItem from './ForecastItem';
-import cityData from '../public/services/city.json';
-import { useWeather } from '@/lib/useWeather';
+import useSWR from 'swr';
 
-interface City {
-  CityCode: string;
-  CityName: string;
-}
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function WeatherOverview() {
-  const [cityList, setCityList] = useState<City[]>([]);
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (cityData.List) {
-      setCityList(cityData.List);
-    }
-  }, []);
-
-  const cityIds = useMemo(() => cityList.map((c) => c.CityCode), [cityList]);
-  const { weatherData, isLoading, error } = useWeather(cityIds);
+  const { data, error, isLoading } = useSWR('/api/weather', fetcher, {
+    refreshInterval: 0.5 * 60 * 1000,
+    revalidateOnFocus: false,
+  });
 
   if (isLoading) return <div className="p-4">Loading weather...</div>;
   if (error)
     return <div className="p-4 text-red-500">Failed to load weather.</div>;
 
-  const selectedData = weatherData.find((w: any) => w.id === selectedCityId);
+  const weatherList = data?.data || [];
+
+  const selectedData = weatherList.find(
+    (w: any) => String(w.id) === selectedCityId
+  );
 
   if (selectedCityId && selectedData) {
     return (
@@ -61,8 +56,8 @@ export default function WeatherOverview() {
 
   return (
     <div className="px-6 sm:px-12 md:px-20 lg:px-36 xl:px-60 2xl:px-80 py-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
-      {weatherData.map((item: any) => (
-        <div key={item.id} onClick={() => setSelectedCityId(item.id)}>
+      {weatherList.map((item: any) => (
+        <div key={item.id} onClick={() => setSelectedCityId(String(item.id))}>
           <ForecastItem
             CityCode={item.id}
             CityName={item.name}
