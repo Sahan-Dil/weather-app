@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ForecastItem from './ForecastItem';
 import useSWR from 'swr';
+import ForecastItemSingle from './ForecastItemSingle';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -23,16 +24,16 @@ export default function WeatherOverview() {
   const selectedData = weatherList.find(
     (w: any) => String(w.id) === selectedCityId
   );
-
   if (selectedCityId && selectedData) {
     return (
       <div className="px-4 py-8 flex justify-center">
         <div className="w-full sm:w-3/4 lg:w-1/2">
-          <ForecastItem
-            CityCode={selectedData.id}
+          <ForecastItemSingle
+            src={`https://openweathermap.org/img/wn/${selectedData.weather[0].icon}@4x.png`}
             CityName={selectedData.name}
+            countryCode={selectedData.sys.country}
             Temp={`${selectedData.main.temp} °C`}
-            Status={selectedData.weather?.[0]?.main || 'Unknown'}
+            Status={selectedData.weather?.[0]?.description || 'Unknown'}
             TempMin={`${selectedData.main.temp_min}`}
             TempMax={`${selectedData.main.temp_max}`}
             Pressure={`${selectedData.main.pressure} hPa`}
@@ -59,10 +60,11 @@ export default function WeatherOverview() {
       {weatherList.map((item: any) => (
         <div key={item.id} onClick={() => setSelectedCityId(String(item.id))}>
           <ForecastItem
-            CityCode={item.id}
+            src={`https://openweathermap.org/img/wn/${item.weather[0].icon}@4x.png`}
             CityName={item.name}
+            countryCode={item.sys.country}
             Temp={`${item.main.temp} °C`}
-            Status={item.weather?.[0]?.main || 'Unknown'}
+            Status={item.weather?.[0]?.description || 'Unknown'}
             TempMin={`${item.main.temp_min}`}
             TempMax={`${item.main.temp_max}`}
             Pressure={`${item.main.pressure} hPa`}

@@ -1,13 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import cloudBg from '../public/assets/clouds-bg.png';
-import clouds from '../public/assets/clouds.png';
+import { getWeatherGradient } from '@/lib/utils';
+import arrowIcon from '../public/assets/arrow.png';
 
 interface ForecastProps {
   CityName: string;
-  CityCode: string;
+  src: string;
+  countryCode: string;
   Temp: string;
   Status: string;
   TempMin?: string;
@@ -25,23 +26,10 @@ interface ForecastProps {
   fullView?: boolean;
 }
 
-const statusToStyle: Record<string, string> = {
-  Clouds: 'bg-gradient-to-br from-blue-400 to-blue-600',
-  Clear: 'bg-gradient-to-br from-green-400 to-green-600',
-  Rain: 'bg-gradient-to-br from-orange-400 to-orange-600',
-  Mist: 'bg-gradient-to-br from-red-400 to-red-600',
-};
-
-const statusToImage: Record<string, any> = {
-  Clouds: clouds,
-  Clear: clouds,
-  Rain: clouds,
-  Mist: clouds,
-};
-
 export default function ForecastItem({
   CityName,
-  CityCode,
+  src,
+  countryCode,
   Temp,
   Status,
   TempMin = 'qqq',
@@ -58,9 +46,7 @@ export default function ForecastItem({
   onBack,
   fullView,
 }: ForecastProps) {
-  const gradient =
-    statusToStyle[Status] || 'bg-gradient-to-br from-gray-400 to-gray-600';
-  const weatherIcon = statusToImage[Status] || '/assets/default.png';
+  const gradient = getWeatherGradient(Status);
 
   // Handle date and time formatting
   const currentDate = new Date();
@@ -86,20 +72,22 @@ export default function ForecastItem({
       }
     >
       {/* Top Section */}
-      <div className={`relative text-white ${gradient} h-2/3 px-16 pt-8 pb-6`}>
+      <div
+        className={`relative text-white ${gradient} h-2/3 px-4 sm:px-8 md:px-12 lg:px-16 pt-6 sm:pt-8 pb-4 sm:pb-6`}
+      >
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={cloudBg}
             alt="Clouds Background"
             layout="fill"
             objectFit="cover"
-            className="opacity-70 mt-16"
+            className="opacity-70 mt-8 sm:mt-12 md:mt-16"
           />
         </div>
         {fullView && (
           <button
             onClick={onBack}
-            className="cursor-pointer absolute top-1 left-1 text-white px-3 py-1 rounded-md text-sm font-medium transition"
+            className="cursor-pointer absolute top-1 left-1 text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium transition"
           >
             <strong>←</strong>
           </button>
@@ -107,68 +95,87 @@ export default function ForecastItem({
 
         <div className="relative z-10 flex flex-col justify-between h-full">
           <div className="flex justify-between items-start">
-            <div className="flex flex-col items-center justify-center text-center">
-              <div className="text-xl font-bold">
-                {CityName}, {CityCode}
+            <div className="flex flex-col items-start sm:items-center justify-center text-left sm:text-center">
+              <div className="text-lg sm:text-xl font-bold">
+                {CityName}, {countryCode}
               </div>
-              <div className="text-sm opacity-90 mt-1">
+              <div className="text-xs sm:text-sm opacity-90 mt-1">
                 {formattedTime}, {formattedDate}
               </div>
             </div>
 
             <div className="text-right">
               <div className="flex items-start">
-                <span className="text-6xl font-bold leading-none">
+                <span className="text-4xl sm:text-5xl md:text-6xl font-bold leading-none">
                   {roundedTemp}
                 </span>
-                <span className="text-2xl ml-1 mt-1">°C</span>
+                <span className="text-lg sm:text-xl md:text-2xl ml-1 mt-1">
+                  °C
+                </span>
               </div>
             </div>
           </div>
 
           <div className="flex justify-between items-end">
-            <div className="flex items-center space-x-2">
-              <Image src={weatherIcon} alt={Status} width={24} height={24} />
-              <div className="text-base">{Status}</div>
+            <div className="flex items-center space-x-1">
+              <img
+                src={src}
+                alt={Status}
+                width={36}
+                height={36}
+                className="sm:w-12 sm:h-12"
+              />
+              <div className="text-xs sm:text-sm">{Status}</div>
             </div>
-            <div className="text-right text-sm leading-tight">
-              <div>Temp Min: {TempMin}°C</div>
-              <div>Temp Max: {TempMax}°C</div>
+            <div className="text-right text-xs sm:text-sm leading-tight ml-2 sm:ml-6">
+              <div>Min: {TempMin}°C</div>
+              <div>Max: {TempMax}°C</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Section */}
-      <div className="bg-[#383B47] text-white text-xs p-4 flex justify-between items-start h-1/3 relative">
+      <div className="bg-[#383B47] text-white text-xs p-3 sm:p-4 flex justify-between items-start h-1/3 relative">
         {/* Left Column */}
-        <div className="space-y-1">
-          <div>
-            <span className="font-semibold">Pressure:</span> {Pressure}
+        <div className="space-y-1 flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-center">
+            <span className="font-semibold text-xs">Pressure:</span>
+            <span className="sm:ml-1 text-xs">{Pressure}</span>
           </div>
-          <div>
-            <span className="font-semibold">Humidity:</span> {Humidity}
+          <div className="flex flex-col sm:flex-row sm:items-center">
+            <span className="font-semibold text-xs">Humidity:</span>
+            <span className="sm:ml-1 text-xs">{Humidity}</span>
           </div>
-          <div>
-            <span className="font-semibold">Visibility:</span> {Visibility}
+          <div className="flex flex-col sm:flex-row sm:items-center">
+            <span className="font-semibold text-xs">Visibility:</span>
+            <span className="sm:ml-1 text-xs">{Visibility}</span>
           </div>
         </div>
 
         {/* Center Column (Wind) */}
-        <div className="flex flex-col items-center justify-center">
-          <div className="text-sm">🧭</div>
-          <div className="text-center">
+        <div className="flex flex-col items-center justify-center flex-1 px-2">
+          <div className="text-sm mb-1 sm:mb-2">
+            <Image
+              src={arrowIcon}
+              alt="Arrow Icon"
+              className="w-3 h-3 sm:w-4 sm:h-4"
+            />
+          </div>
+          <div className="text-center text-xs">
             {WindSpeed} {WindDirection}
           </div>
         </div>
 
         {/* Right Column */}
-        <div className="space-y-1 text-right">
-          <div>
-            <span className="font-semibold">Sunrise:</span> {Sunrise}
+        <div className="space-y-1 text-right flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end">
+            <span className="font-semibold text-xs sm:mr-1">Sunrise:</span>
+            <span className="text-xs">{Sunrise}</span>
           </div>
-          <div>
-            <span className="font-semibold">Sunset:</span> {Sunset}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end">
+            <span className="font-semibold text-xs sm:mr-1">Sunset:</span>
+            <span className="text-xs">{Sunset}</span>
           </div>
         </div>
       </div>
