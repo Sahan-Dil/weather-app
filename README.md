@@ -1,6 +1,5 @@
 # weather-app
 
-
 A modern weather application built with **Next.js**, using **OpenWeather API** for data, **SWR** for caching, and **Auth0** for secure authentication. Includes Multi-Factor Authentication (MFA).
 
 ## 🛠️ Setup Instructions
@@ -17,6 +16,8 @@ A modern weather application built with **Next.js**, using **OpenWeather API** f
 
 4. **Auth0 Login**  
    Use the pre-configured test credentials:  
+   test@gmail.com
+   test#test1234
 
 ## 🛠️ Features
 
